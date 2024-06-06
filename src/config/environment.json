@@ -1,0 +1,19 @@
+{
+  "morganaccesslog": {
+    "INTERVAL": "1d",
+    "DIRNAME": "accesslogs",
+    "SIZE": "10M",
+    "COMPRESS": "gzip",
+    "FILENAME": "accesslog.log"
+  },
+  "winstonapplicationlog": {
+    "FREQUENCY": 1,
+    "MAX_SIZE": 20,
+    "MAX_FILE_SIZE": 1
+  },
+  "frontendurl": {
+    "FRONTEND_REQUEST_LOCAL": "localhost:8000",
+    "FRONTEND_REQUEST_DEV": "http://3.111.24.156:8000/",
+    "FRONTENDBASEURL": "http://localhost:8081/confirm/"
+}
+}

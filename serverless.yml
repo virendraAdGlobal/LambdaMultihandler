@@ -1,0 +1,52 @@
+service: lambda
+
+frameworkVersion: "3"
+
+provider:
+  name: aws
+  runtime: nodejs18.x
+  memorySize: 2048
+  timeout: 20
+  region: ap-south-1
+  stage: ${opt:stage, 'dev'}
+  httpApi:
+    cors: true
+  environment: ${file(src/config/${self:provider.stage}.json)}
+
+plugins:
+  - serverless-offline
+  - serverless-dotenv-plugin
+
+
+functions:
+  hello:
+    handler: src/handlers/handler.hello
+    events:
+      - http:
+          path: /hello
+          method: post
+  getUsers:
+    name: getUsers
+    handler: src/handlers/hr.hrHandler.users
+    events:
+      - http:
+          path: /users
+          method: post
+  login:
+    name: login
+    handler: src/handlers/hr.hrHandler.login
+    events:
+      - http:
+          path: /login
+          method: post
+  
+    
+     
+
+
+
+
+
+
+
+
