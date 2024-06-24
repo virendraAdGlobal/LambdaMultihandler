@@ -1,24 +1,26 @@
 'use strict';
-//var express = require('express');
-//require('dotenv').config();
-//const connectDB = require('../utils/db');
-let { errorResponse } = require('../utils/errorresponse');
-let { successResponse } = require('../utils/successresponse');
-let { comparePassword } = require('../utils/comparePassword');
-let { login } = require('../validation/hrmodulevalidation');
+const { errorResponse } = require('../utils/errorresponse');
+const { successResponse } = require('../utils/successresponse');
+const { comparePassword } = require('../utils/comparePassword');
+const { login } = require('../validation/hrmodulevalidation');
 const validator= require("../utils/validation")
-const {modelName,connecthChatSchema} = require('../models/user');
+const {modelName,userSchema} = require('../models/user');
 const {connectToDatabase} =require('../utils/db');
 const {getModel} =require('../utils/getmodel');
-var bcrypt = require('bcryptjs');
+const bcrypt = require('bcryptjs');
+const jwt = require("jsonwebtoken");
+//const authMiddleware = require('./authMiddleware');
+const fs = require('graceful-fs');
 
-// Ensure the database connection is established
-//connectDB();
-//console.log("process.env",process.env.PORT)
+// Your code that uses fs operations
+
+
+
 const hrHandler = {
     users: async (req, res) => {
        // console.log("test",req.body);
         try {
+           // authMiddleware(req, res);
             const { error } =login.validate(JSON.parse(req.body))
             if (error) {
                 return errorResponse(res, error.details[0].message, 400, error, {}) 
@@ -31,10 +33,8 @@ const hrHandler = {
             const connection = await connectToDatabase(dbUri1, dbName1);
 
             // Get or create the model for the connection
-                const User = getModel(connection, modelName, connecthChatSchema);
+                const User = getModel(connection, modelName, userSchema);
 
-            // Example operation
-            //const result = await User.find({});
             const { username, password } = req.body;
             const profile = await User.findOne({});
             return successResponse(req, res, "user get successful", profile);
@@ -56,16 +56,27 @@ const hrHandler = {
             const connection = await connectToDatabase(dbUri1, dbName1);
 
             // Get or create the model for the connection
-            const User = getModel(connection, modelName, connecthChatSchema);
-
-            // Example operation
-            //const result = await User.find({});
+            const User = getModel(connection, modelName, userSchema);
             const { username, password } = JSON.parse(req.body);
            
-            const user = await User.findOne({username});
+            let user = await User.findOne({username}).lean();
             if (user) {
                 const isMatch = await bcrypt.compare(password, user.password);
                 if(isMatch){
+                    const userObj ={
+                        username:username
+                    }
+                    var token = jwt.sign(
+                        JSON.parse(JSON.stringify(userObj)),
+                        process.env.JWT_SECRET_KEY,
+                        {
+                          expiresIn: "30m",
+                        }
+                      );
+                      //   let data = {};
+                      //   data.user = user
+                      user.token = token;
+                     // console.log(user);
                     return successResponse(req, res, 'Login successfully', user) 
                 }else{
                     return errorResponse(res, 'Invalid credentials', 401, {}, {}) 

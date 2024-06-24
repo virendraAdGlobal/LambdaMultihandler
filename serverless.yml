@@ -1,6 +1,5 @@
 service: lambda
-
-frameworkVersion: "3"
+frameworkVersion: "4.1.0"
 
 provider:
   name: aws
@@ -11,27 +10,36 @@ provider:
   stage: ${opt:stage, 'dev'}
   httpApi:
     cors: true
-  environment: ${file(src/config/${self:provider.stage}.json)}
+  environment: 
+    # SQS_QUEUE_URL: ${cf:${self:service}-${sls:stage}.queueUrl}  # Comment this out for the initial 
+    # QUEUE_URL: 
+    #   Ref: MyQueue
+    ENV_VARS_FROM_FILE: ${file(src/config/${self:provider.stage}.json)}
 
 plugins:
   - serverless-offline
   - serverless-dotenv-plugin
-
+  - serverless-middleware
 
 functions:
   hello:
+    name: hello
     handler: src/handlers/handler.hello
     events:
       - http:
           path: /hello
-          method: post
+          method: get
+
   getUsers:
     name: getUsers
+    # middleware:
+    #   - src/handlers/authMiddleware.authenticate
     handler: src/handlers/hr.hrHandler.users
     events:
       - http:
           path: /users
           method: post
+
   login:
     name: login
     handler: src/handlers/hr.hrHandler.login
@@ -39,14 +47,78 @@ functions:
       - http:
           path: /login
           method: post
-  
-    
-     
+
+  secretManager:
+    name: secretManager
+    handler: src/handlers/secretManager.configsecretmanager
+    events:
+      - http:
+          path: /get-config-credentials
+          method: get
+
+  calculator:
+    name: calculator
+    handler: src/handlers/calculator.calculator
+    events:
+      - http:
+          path: /calculator
+          method: post
+
+#   sendMessage:
+#     handler: src/handlers/queuehandler.sendMessage
+#     environment:
+#       QUEUE_URL: 
+#         Ref: MyQueue
+#     events:
+#       - http:
+#           path: /send
+#           method: post
+
+#   receiveMessage:
+#     handler: src/handlers/queuehandler.receiveMessage
+#     events:
+#       - sqs:
+#           arn: arn:aws:sqs:ap-south-1:907389275478:MyQueue
+#           maximumConcurrency: 250
+
+# resources:
+#   Resources:
+#     MyQueue:
+#       Type: AWS::SQS::Queue
+#       Properties:
+#         QueueName: MyQueue
 
 
+# outputs:
+#   queueUrl:
+#     Description: URL of the SQS queue
+#     Value:
+#       Ref: MyQueue
 
 
+  sendMessage:
+    handler: src/handlers/queuehandler.sendMessage
+    environment:
+      SQS_QUEUE_URL: 
+        Ref: MyQueue
+    events:
+      - http:
+          path: /send
+          method: post
 
+  receiveMessage:
+    handler: src/handlers/queuehandler.receiveMessage
+    events:
+      - sqs:
+          arn:
+            Fn::GetAtt:
+              - MyQueue
+              - Arn
+          maximumConcurrency: 250
 
-
-
+resources:
+  Resources:
+    MyQueue:
+      Type: AWS::SQS::Queue
+      Properties:
+        QueueName: myQueueName

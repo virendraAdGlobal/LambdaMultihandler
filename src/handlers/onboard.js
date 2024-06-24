@@ -4,6 +4,10 @@ require('dotenv').config();
 const connectDB = require('../utils/db');
 let { errorResponse } = require('../utils/errorresponse');
 let { successResponse } = require('../utils/successresponse');
+const fs = require('graceful-fs');
+
+// Your code that uses fs operations
+
 
 // Ensure the database connection is established
 connectDB();
