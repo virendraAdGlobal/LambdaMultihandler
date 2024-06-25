@@ -12,8 +12,10 @@ provider:
     cors: true
   environment: 
     # SQS_QUEUE_URL: ${cf:${self:service}-${sls:stage}.queueUrl}  # Comment this out for the initial 
-    # QUEUE_URL: 
-    #   Ref: MyQueue
+    QUEUE_URL: 
+      Ref: MyQueue
+    TOPIC_ARN: 
+      Ref: MySNSTopic
     ENV_VARS_FROM_FILE: ${file(src/config/${self:provider.stage}.json)}
 
 plugins:
@@ -115,10 +117,20 @@ functions:
               - MyQueue
               - Arn
           maximumConcurrency: 250
+  SENDSNS:
+    handler: src/handlers/snshandler.SENDSNS
+    events:
+      - http:
+          path: send-sns
+          method: post
 
 resources:
   Resources:
     MyQueue:
       Type: AWS::SQS::Queue
       Properties:
-        QueueName: myQueueName
+        QueueName: MyQueue
+    MySNSTopic:
+      Type: AWS::SNS::Topic
+      Properties:
+        TopicName: MySNSTopic
