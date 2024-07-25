@@ -24,12 +24,27 @@ plugins:
   - serverless-middleware
 
 functions:
+  MyAuthfunction: 
+    handler: src/handlers/test/authrizor.authFunction 
+
   hello:
     name: hello
     handler: src/handlers/handler.hello
     events:
       - http:
           path: /hello
+          method: get
+  seeders:
+    handler: seeders/index.runSeeders
+    events:
+      - http:
+          path: seeders
+          method: get
+  migration:
+    handler: src/handlers/migration.runMigrations
+    events:
+      - http:
+          path: migration
           method: get
 
   getUsers:
@@ -41,6 +56,9 @@ functions:
       - http:
           path: /users
           method: post
+          authorizer:
+            name: MyAuthfunction
+            type: REQUEST
 
   login:
     name: login
@@ -65,38 +83,6 @@ functions:
       - http:
           path: /calculator
           method: post
-
-#   sendMessage:
-#     handler: src/handlers/queuehandler.sendMessage
-#     environment:
-#       QUEUE_URL: 
-#         Ref: MyQueue
-#     events:
-#       - http:
-#           path: /send
-#           method: post
-
-#   receiveMessage:
-#     handler: src/handlers/queuehandler.receiveMessage
-#     events:
-#       - sqs:
-#           arn: arn:aws:sqs:ap-south-1:907389275478:MyQueue
-#           maximumConcurrency: 250
-
-# resources:
-#   Resources:
-#     MyQueue:
-#       Type: AWS::SQS::Queue
-#       Properties:
-#         QueueName: MyQueue
-
-
-# outputs:
-#   queueUrl:
-#     Description: URL of the SQS queue
-#     Value:
-#       Ref: MyQueue
-
 
   sendMessage:
     handler: src/handlers/queuehandler.sendMessage
