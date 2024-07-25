@@ -14,9 +14,9 @@ module.exports = {
 
             // Check if collection already exists
             console.log("client",client);
-            const collections = await db.listCollections({ name: 'test_user' }).toArray();
+            const collections = await db.listCollections({ name: 'enviro_users' }).toArray();
             if (collections.length > 0) {
-                console.log('Collection test_user already exists. Skipping creation.');
+                console.log('Collection enviro_users already exists. Skipping creation.');
                 return;
             }
 
@@ -25,22 +25,84 @@ module.exports = {
                 validator: {
                     $jsonSchema: {
                         bsonType: 'object',
-                        required: ['name', 'email'],
+                        required: ['full_name', 'email'],
                         properties: {
-                            name: {
-                                bsonType: 'string',
-                                description: 'must be a string and is required'
-                            },
                             email: {
                                 bsonType: 'string',
                                 description: 'must be a string and match the regular expression pattern'
                             },
-                            age: {
+                            created_by: {
                                 bsonType: 'int',
-                                minimum: 18,
-                                maximum: 120,
-                                description: 'must be an integer in [18, 120]'
+                                description: 'must be an integer'
                             },
+                            company_id: {
+                                bsonType: 'int',
+                                description: 'must be an integer'
+                            },
+                            role_id: {
+                                bsonType: 'int',
+                                description: 'must be an integer'
+                            },
+                            employee_code: {
+                                bsonType: 'string',
+                                description: 'must be a string and is required'
+                            },
+                            salutation: {
+                                bsonType: 'string',
+                                description: 'must be a string and is required'
+                            },
+                            first_name: {
+                                bsonType: 'string',
+                                description: 'must be a string and is required'
+                            },
+                            middle_name: {
+                                bsonType: 'string',
+                                description: 'must be a string and is required'
+                            },
+                            last_name: {
+                                bsonType: 'string',
+                                description: 'must be a string and is required'
+                            },
+                            phone_code: {
+                                bsonType: 'string',
+                                description: 'must be a string and is required'
+                            },
+                            phone_number: {
+                                bsonType: 'string',
+                                description: 'must be a string and is required'
+                            },
+                            profile_image: {
+                                bsonType: 'string',
+                                description: 'must be a string and is required'
+                            },
+                            first_login: {
+                                bsonType: 'int',
+                                description: 'must be a int in[0,1] 0=>no,1=>yes'
+                            },
+                            gender: {
+                                bsonType: 'string',
+                                description: 'must be a string and is required'
+                            },
+                            password: {
+                                bsonType: 'string',
+                                description: 'must be a string and is required'
+                            },
+                            otp: {
+                                bsonType: 'string',
+                                description: 'must be a string and is required'
+                            },
+                            last_login: {
+                                bsonType: 'string',
+                                description: 'must be a string and is required'
+                            },
+                            is_notification: {
+                                bsonType: 'int',
+                                description: 'must be a int in[0,1] 0=>disabled,1=>enabled'
+                            },
+                            status: {
+                                enum: ['Pending','Active','Lock'], // Enum values
+                                description: "must be one of the predefined enum values and is required"
+                              },
                             createdAt: {
                                 bsonType: 'date',
                                 description: 'must be a date and is required'

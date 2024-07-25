@@ -1,4 +1,4 @@
-const seedUsers = require('./20240724105756-my_test_users.js');
+const seedUsers = require('./20240724105756-enviro_users.js');
 const { errorResponse } = require('../src/utils/errorresponse.js');
 const { successResponse } = require('../src/utils/successresponse.js');
 
