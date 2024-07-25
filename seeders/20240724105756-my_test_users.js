@@ -15,10 +15,11 @@ async function seedUsers() {
             return;
         }
         const initialData = [
-            { name: 'John Doe', email: 'john.doe@example.com', age: 30 },
-            { name: 'Jane Smith', email: 'jane.smith@example.com', age: 25 }
+            { name: 'John Doe', email: 'john.doe@example.com', age: 30, createdAt: new Date(), updatedAt: new Date() },
+            { name: 'Jane Smith', email: 'jane.smith@example.com', age: 25, createdAt: new Date(), updatedAt: new Date() }
             // Add more objects as needed
         ];
+        console.log("initialData",initialData)
         // Insert initial data into the collection
         await collection.insertMany(initialData);
         console.log('Data seeded of'+filename+' successfully.');
